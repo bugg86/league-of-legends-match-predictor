@@ -49,3 +49,25 @@ class RiotApi(object) :
             matchID = matchID
         )
         return self.request(api_url)
+
+    def getSummonerByPuuid (self, puuid) :
+        api_url = Consts.URL['summoner_by_puuid'].format(
+            version = Consts.API_VERSIONS['summoner'],
+            puuid=puuid
+        )
+        return self.request(api_url)
+
+    def getSummonerLeagueByID (self, summonerID) :
+        api_url = Consts.URL['league_by_summoner_id'].format(
+            version = Consts.API_VERSIONS['league'],
+            summonerID = summonerID
+        )
+        return self.request(api_url)
+
+    def getChampionMasteryBySummonerID (self, summonerID, championID) :
+        api_url = Consts.URL['champion_mastery_by_summoner_id'].format(
+            version = Consts.API_VERSIONS['champion-mastery'],
+            summonerID = summonerID,
+            championID = championID
+        )
+        return self.request(api_url)

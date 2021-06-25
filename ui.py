@@ -4,19 +4,19 @@ import model as Model
  
 class Window(QMainWindow):
     def generateButtons(self) :
-        self.generateSummonerIDInfoButton()
+        self.generateSummonerProfileButton()
 
     #Button that generates the summoner id json files
-    def generateSummonerIDInfoButton (self) :
-        self.gsiib = QPushButton('Generate', self)
-        self.gsiib.setToolTip('Generate the ID Info for\nthe selected summoner.')
-        self.gsiib.move(100,70)
+    def generateSummonerProfileButton (self) :
+        self.gsp = QPushButton('Generate', self)
+        self.gsp.setToolTip('Generate the ID Info for\nthe selected summoner.')
+        self.gsp.move(100,70)
         self.summonerNameField = QLineEdit(self)
         self.summonerNameField.move(20, 20)
         self.summonerNameField.resize(280,40)
-        self.gsiib.clicked.connect(self.gsiibOnClick)
+        self.gsp.clicked.connect(self.gspOnClick)
         
-    def gsiibOnClick (self) :
+    def gspOnClick (self) :
         textboxValue = self.summonerNameField.text()
         Model.generateSummonerInfo(textboxValue)
         self.summonerNameField.setText("")

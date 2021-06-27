@@ -48,14 +48,12 @@ def getSummonerLevel(puuid) :
     return summonerLevel
 
 # Return the summoner's rank
-def getSummonerRank(puuid) :
-    summonerInfo = na1_api.getSummonerByPuuid(puuid)
-    summonerID = summonerInfo['id']
-    summonerLeagueInfo = na1_api.getSummonerLeagueByID(summonerID)
-    if summonerLeagueInfo == [] :
+def getSummonerRank(summonerLeagueInfo) :
+    leagueInfo = summonerLeagueInfo
+    if leagueInfo == [] :
         return "EmptyBody"
-    tier = summonerLeagueInfo[0]['tier']
-    rank = summonerLeagueInfo[0]['rank']
+    tier = leagueInfo[0]['tier']
+    rank = leagueInfo[0]['rank']
     summonerTier = 0
     summonerRank = 0.0
 
@@ -94,24 +92,24 @@ def getSummonerRank(puuid) :
     return (summonerTier + summonerRank)
 
 # Returns if there was a hotstreak or not. 0 is no 1 is yes.
-def getIfHotstreak(puuid) :
-    summonerInfo = na1_api.getSummonerByPuuid(puuid)
-    summonerID = summonerInfo['id']
-    summonerLeagueInfo = na1_api.getSummonerLeagueByID(summonerID)
-    if summonerLeagueInfo == [] :
+def getIfHotstreak(summonerLeagueInfo) :
+    leagueInfo = summonerLeagueInfo
+    if leagueInfo == [] :
         return "EmptyBody"
     
-    if summonerLeagueInfo[0]['hotStreak'] :
+    if leagueInfo[0]['hotStreak'] :
         return 1
     else :
         return 0
 
+# Generate summoner league info using summonerid
+def getSummonerLeagueInfo(summonerid) :
+    summonerLeagueInfo = na1_api.getSummonerLeagueByID(summonerid)
+    return summonerLeagueInfo
+
 # Returns the champion mastery for a given player and champion.
-def getChampionMastery(puuid, championid) :
-    summonerInfo = na1_api.getSummonerByPuuid(puuid)
-    summonerID = summonerInfo['id']
-    
-    championMasteryInfo = na1_api.getChampionMasteryBySummonerID(summonerID, championid)
+def getChampionMastery(summonerid, championid) :
+    championMasteryInfo = na1_api.getChampionMasteryBySummonerID(summonerid, championid)
     champMastery = championMasteryInfo['championLevel']
     return champMastery
 
@@ -121,21 +119,23 @@ def generateDataRow(matchid) :
     row = []
     for participant in matchInfo['info']['participants'] :
         puuid = participant['puuid']
+        summonerid = participant['summonerId']
+        summonerLeagueInfo = getSummonerLeagueInfo(summonerid)
         row.append(puuid)
 
         summLevel = getSummonerLevel(puuid)
         row.append(summLevel)
 
-        summRank = getSummonerRank(puuid)
+        summRank = getSummonerRank(summonerLeagueInfo)
         row.append(summRank)
 
-        hotstreak = getIfHotstreak(puuid)
+        hotstreak = getIfHotstreak(summonerLeagueInfo)
         row.append(hotstreak)
 
         champion = participant['championId']
         row.append(champion)
 
-        champMastery = getChampionMastery(puuid, champion)
+        champMastery = getChampionMastery(summonerid, champion)
         row.append(champMastery)
 
         teamid = participant['teamId']

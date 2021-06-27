@@ -118,12 +118,14 @@ def generateDataRow(matchid) :
     matchInfo = americas_api.getMatchData(matchid) # gives me the match info as a dictionary.
 
     row = []
+    if 'status' in matchInfo:
+        return []
     for participant in matchInfo['info']['participants'] :
         puuid = participant['puuid']
         summonerid = participant['summonerId']
         summonerLeagueInfo = getSummonerLeagueInfo(summonerid)
         row.append(puuid)
-
+ 
         summLevel = getSummonerLevel(puuid)
         row.append(summLevel)
 

@@ -12,6 +12,7 @@ def main() :
     puuid = Model.getSummonerPuuid(name)
     count = input("Enter number of matches: ")
     fileNumber = input("Enter file number: ")
+    matchStart = input("Enter match start point: ")
 
     # print(puuid)
 
@@ -28,7 +29,7 @@ def main() :
     # print(Model.getMatchList("jYHjDC1WFC_1YqNldzBESxEzERwh0wZq9gE58ccUHcAFKYmdS5BYSvHS_uLp8uIzMnLN6PxjrWIV8g", 10))
     
     print("Generating match list...")
-    matchList = Model.getMatchList(puuid, 15, count)
+    matchList = Model.getMatchList(puuid, matchStart, count)
     print("Match list of " + str(count) + " matches generated.\n")
 
     rows = []

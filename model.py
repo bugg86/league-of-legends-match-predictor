@@ -116,7 +116,7 @@ def getChampionMastery(puuid, championid) :
     return champMastery
 
 def generateDataRow(matchid) :
-    matchInfo = na1_api.getMatchData(matchid) # gives me the match info as a dictionary.
+    matchInfo = americas_api.getMatchData(matchid) # gives me the match info as a dictionary.
 
     row = []
     for participant in matchInfo['info']['participants'] :
@@ -148,3 +148,7 @@ def generateDataRow(matchid) :
         winningTeam = 1
     row.append(winningTeam)
     return row
+
+def getMatchList(puuid, count) :
+    matchList = americas_api.getMatchList(puuid, 0, count)
+    return matchList

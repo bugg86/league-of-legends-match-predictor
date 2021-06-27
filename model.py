@@ -113,6 +113,7 @@ def getChampionMastery(summonerid, championid) :
     champMastery = championMasteryInfo['championLevel']
     return champMastery
 
+# Generates a List with all the data points from a match.
 def generateDataRow(matchid) :
     matchInfo = americas_api.getMatchData(matchid) # gives me the match info as a dictionary.
 
@@ -128,9 +129,6 @@ def generateDataRow(matchid) :
 
         summRank = getSummonerRank(summonerLeagueInfo)
         row.append(summRank)
-
-        hotstreak = getIfHotstreak(summonerLeagueInfo)
-        row.append(hotstreak)
 
         champion = participant['championId']
         row.append(champion)
@@ -149,6 +147,12 @@ def generateDataRow(matchid) :
     row.append(winningTeam)
     return row
 
-def getMatchList(puuid, count) :
-    matchList = americas_api.getMatchList(puuid, 0, count)
+# Returns list of match ids given the summoner's puuid and a match count.
+def getMatchList(puuid, start, count) :
+    matchList = americas_api.getMatchList(puuid, start, count)
     return matchList
+
+def getSummonerPuuid(name) : 
+    summonerInfo = na1_api.get_summoner_by_name(name)
+    puuid = summonerInfo['puuid']
+    return puuid

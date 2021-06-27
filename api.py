@@ -21,7 +21,7 @@ class RiotApi(object) :
             ), 
             params = args
         )
-        print (response.url)
+        # print (response.url)
         return response.json()
 
     # Make api call to look up summoner profile info by summoner name.

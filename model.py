@@ -5,12 +5,13 @@ import consts as Consts
 import os
 from os import path as Path
 
-key = "RGAPI-6a4a9c2d-af22-4bef-a64d-e0db2375fa2a"
-api = RiotApi(key, Consts.REGIONS['north_america'])
+key = "RGAPI-85c9e7dc-460d-4967-840b-055384278af1"
+na1_api = RiotApi(key, Consts.REGIONS['north_america'])
+americas_api = RiotApi(key, Consts.REGIONS['americas'])
 
 # Get json output from api call and call method to save file
 def generateSummonerInfo(name) :
-    jsonOut = api.get_summoner_by_name(name)
+    jsonOut = na1_api.get_summoner_by_name(name)
     saveSummonerInfo(jsonOut, name)
 
 # Save json output from getSummonerInfo api call in a json file.
@@ -25,7 +26,7 @@ def generateMatchInfo(name, count) :
     f = open("summoners/" + name + ".json", 'r')
     summonerData = json.loads(f.read())
     puuid = summonerData['puuid']
-    jsonOut = api.getMatchList(puuid, 0, count)
+    jsonOut = americas_api.getMatchList(puuid, 0, count)
     saveMatchInfo(jsonOut, name)
 
 # Save json output from getMatchList api call in a json file.
@@ -37,20 +38,20 @@ def saveMatchInfo(jsonOut, name) :
             os.remove(path)
         
         matchInfoFile = open(path, 'x')
-        matchInfoFile.write(json.dumps(api.getMatchData(matchID), indent = 2, sort_keys=True))
+        matchInfoFile.write(json.dumps(americas_api.getMatchData(matchID), indent = 2, sort_keys=True))
         matchInfoFile.close()
 
 # Return the summoner level.
 def getSummonerLevel(puuid) :
-    summonerInfo = api.getSummonerByPuuid(puuid)
+    summonerInfo = na1_api.getSummonerByPuuid(puuid)
     summonerLevel = summonerInfo['summonerLevel']
     return summonerLevel
 
 # Return the summoner's rank
 def getSummonerRank(puuid) :
-    summonerInfo = api.getSummonerByPuuid(puuid)
+    summonerInfo = na1_api.getSummonerByPuuid(puuid)
     summonerID = summonerInfo['id']
-    summonerLeagueInfo = api.getSummonerLeagueByID(summonerID)
+    summonerLeagueInfo = na1_api.getSummonerLeagueByID(summonerID)
     if summonerLeagueInfo == [] :
         return "EmptyBody"
     tier = summonerLeagueInfo[0]['tier']
@@ -94,9 +95,9 @@ def getSummonerRank(puuid) :
 
 # Returns if there was a hotstreak or not. 0 is no 1 is yes.
 def getIfHotstreak(puuid) :
-    summonerInfo = api.getSummonerByPuuid(puuid)
+    summonerInfo = na1_api.getSummonerByPuuid(puuid)
     summonerID = summonerInfo['id']
-    summonerLeagueInfo = api.getSummonerLeagueByID(summonerID)
+    summonerLeagueInfo = na1_api.getSummonerLeagueByID(summonerID)
     if summonerLeagueInfo == [] :
         return "EmptyBody"
     
@@ -105,8 +106,45 @@ def getIfHotstreak(puuid) :
     else :
         return 0
 
-def getChampionMastery(puuid, matchid) :
-    summonerInfo = api.getSummonerByPuuid(puuid)
+# Returns the champion mastery for a given player and champion.
+def getChampionMastery(puuid, championid) :
+    summonerInfo = na1_api.getSummonerByPuuid(puuid)
     summonerID = summonerInfo['id']
     
-    matchData = api.getMatchData(matchid)
+    championMasteryInfo = na1_api.getChampionMasteryBySummonerID(summonerID, championid)
+    champMastery = championMasteryInfo['championLevel']
+    return champMastery
+
+def generateDataRow(matchid) :
+    matchInfo = na1_api.getMatchData(matchid) # gives me the match info as a dictionary.
+
+    row = []
+    for participant in matchInfo['info']['participants'] :
+        puuid = participant['puuid']
+        row.append(puuid)
+
+        summLevel = getSummonerLevel(puuid)
+        row.append(summLevel)
+
+        summRank = getSummonerRank(puuid)
+        row.append(summRank)
+
+        hotstreak = getIfHotstreak(puuid)
+        row.append(hotstreak)
+
+        champion = participant['championId']
+        row.append(champion)
+
+        champMastery = getChampionMastery(puuid, champion)
+        row.append(champMastery)
+
+        teamid = participant['teamId']
+        row.append(teamid)
+
+    winningTeam = 0
+    if matchInfo['info']['teams'][0]['win'] :
+        winningTeam = 0
+    else :
+        winningTeam = 1
+    row.append(winningTeam)
+    return row

@@ -110,6 +110,8 @@ def getSummonerLeagueInfo(summonerid) :
 # Returns the champion mastery for a given player and champion.
 def getChampionMastery(summonerid, championid) :
     championMasteryInfo = na1_api.getChampionMasteryBySummonerID(summonerid, championid)
+    if 'status' in championMasteryInfo :
+        return 0
     champMastery = championMasteryInfo['championLevel']
     return champMastery
 
@@ -132,11 +134,14 @@ def generateDataRow(matchid) :
         summRank = getSummonerRank(summonerLeagueInfo)
         row.append(summRank)
 
-        champion = participant['championId']
+        champion = participant['championName']
         row.append(champion)
 
         champMastery = getChampionMastery(summonerid, champion)
         row.append(champMastery)
+
+        role = participant['role']
+        row.append(role)
 
         teamid = participant['teamId']
         row.append(teamid)

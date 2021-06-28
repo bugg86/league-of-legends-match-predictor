@@ -51,7 +51,7 @@ def getSummonerLevel(puuid) :
 def getSummonerRank(summonerLeagueInfo) :
     leagueInfo = summonerLeagueInfo
     if leagueInfo == [] :
-        return "EmptyBody"
+        return 0.0
     tier = leagueInfo[0]['tier']
     rank = leagueInfo[0]['rank']
     summonerTier = 0

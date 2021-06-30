@@ -1,7 +1,7 @@
 import requests
 import consts as Consts
 
-key = "RGAPI-4b5730b4-4840-405a-a155-4c520f909704"
+key = "RGAPI-77d4bfe4-324a-4a77-a297-0fe3c6dbd587"
 url = "https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/JE2OA4NhplDQq3vd_BR_zkMj17LTP3R9K2yq2zphdSOxAHQxrxtkeX6TMDctzveiae3p48FOPhW_Rg/ids?start=0&count=20&api_key=RGAPI-e85582a7-c31e-4f4f-9078-872081eaef6c"
 
 class RiotApi(object) :
@@ -71,3 +71,16 @@ class RiotApi(object) :
             championID = championID
         )
         return self.request(api_url)
+
+    def getLiveMatchData (self, summonerID) :
+        api_url = Consts.URL['spectator_by_summoner_id'].format(
+            version = Consts.API_VERSIONS['spectator'],
+            summonerID = summonerID
+        )
+        return self.request(api_url)
+    
+    def getSummonerByID (self, summonerID) :
+        api_url = Consts.URL['summoner_by_id'].format(
+            version = Consts.API_VERSIONS['summoner'],
+            summonerID = summonerID
+        )

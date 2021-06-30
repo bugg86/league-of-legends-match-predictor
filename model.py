@@ -5,7 +5,7 @@ import consts as Consts
 import os
 from os import path as Path
 
-key = "RGAPI-85c9e7dc-460d-4967-840b-055384278af1"
+key = "RGAPI-77d4bfe4-324a-4a77-a297-0fe3c6dbd587"
 na1_api = RiotApi(key, Consts.REGIONS['north_america'])
 americas_api = RiotApi(key, Consts.REGIONS['americas'])
 
@@ -159,7 +159,63 @@ def getMatchList(puuid, start, count) :
     matchList = americas_api.getMatchList(puuid, start, count)
     return matchList
 
+# Gets the summoner's puuid
 def getSummonerPuuid(name) : 
     summonerInfo = na1_api.get_summoner_by_name(name)
     puuid = summonerInfo['puuid']
     return puuid
+
+#Gets the json of the live match data for a summoner by name.
+def getLiveMatchData(name) :
+    summonerInfo = na1_api.get_summoner_by_name(name)
+    summonerid = summonerInfo['id']
+    matchData = na1_api.getLiveMatchData(summonerid)
+    return matchData
+
+# Generates csv row for use in the program later.
+def generateLiveMatchDataRow(matchdata) :
+    matchInfo = matchdata
+
+    row = []
+    if 'status' in matchInfo:
+        return []
+    for participant in matchInfo['participants'] :
+        summonerid = participant['summonerId']
+        summonerName = participant['summonerName']
+        summonerInfo = na1_api.get_summoner_by_name(summonerName)
+        puuid = summonerInfo['puuid']
+        summonerLeagueInfo = getSummonerLeagueInfo(summonerid)
+        row.append(puuid)
+ 
+        summLevel = getSummonerLevel(puuid)
+        row.append(summLevel)
+
+        summRank = getSummonerRank(summonerLeagueInfo)
+        row.append(summRank)
+
+        champion = participant['championName']
+        row.append(champion)
+
+        champMastery = getChampionMastery(summonerid, champion)
+        row.append(champMastery)
+
+        role = participant['role']
+        row.append(role)
+
+        teamid = participant['teamId']
+        row.append(teamid)
+
+    winningTeam = 0
+    if matchInfo['teams'][0]['win'] :
+        winningTeam = 0
+    else :
+        winningTeam = 1
+    row.append(winningTeam)
+    return row
+
+# Gets the name of the champion based on id
+def getChampionName(championid) :
+    jsonData = open("data/champions.json", 'r')
+    for champion in jsonData['data'] :
+        if champion['key'] == championid :
+            return champion['id']
